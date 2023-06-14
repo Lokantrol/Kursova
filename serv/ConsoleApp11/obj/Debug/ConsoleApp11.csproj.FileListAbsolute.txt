@@ -1,0 +1,16 @@
+C:\Users\malch\source\repos\ConsoleApp11\ConsoleApp11\bin\Debug\ConsoleApp11.exe.config
+C:\Users\malch\source\repos\ConsoleApp11\ConsoleApp11\bin\Debug\ConsoleApp11.exe
+C:\Users\malch\source\repos\ConsoleApp11\ConsoleApp11\bin\Debug\ConsoleApp11.pdb
+C:\Users\malch\source\repos\ConsoleApp11\ConsoleApp11\obj\Debug\ConsoleApp11.csproj.AssemblyReference.cache
+C:\Users\malch\source\repos\ConsoleApp11\ConsoleApp11\obj\Debug\ConsoleApp11.csproj.SuggestedBindingRedirects.cache
+C:\Users\malch\source\repos\ConsoleApp11\ConsoleApp11\obj\Debug\ConsoleApp11.csproj.CoreCompileInputs.cache
+C:\Users\malch\source\repos\ConsoleApp11\ConsoleApp11\obj\Debug\ConsoleApp11.exe
+C:\Users\malch\source\repos\ConsoleApp11\ConsoleApp11\obj\Debug\ConsoleApp11.pdb
+C:\Users\malch\source\repos\serv\ConsoleApp11\bin\Debug\ConsoleApp11.exe.config
+C:\Users\malch\source\repos\serv\ConsoleApp11\bin\Debug\ConsoleApp11.exe
+C:\Users\malch\source\repos\serv\ConsoleApp11\bin\Debug\ConsoleApp11.pdb
+C:\Users\malch\source\repos\serv\ConsoleApp11\obj\Debug\ConsoleApp11.csproj.AssemblyReference.cache
+C:\Users\malch\source\repos\serv\ConsoleApp11\obj\Debug\ConsoleApp11.csproj.SuggestedBindingRedirects.cache
+C:\Users\malch\source\repos\serv\ConsoleApp11\obj\Debug\ConsoleApp11.csproj.CoreCompileInputs.cache
+C:\Users\malch\source\repos\serv\ConsoleApp11\obj\Debug\ConsoleApp11.exe
+C:\Users\malch\source\repos\serv\ConsoleApp11\obj\Debug\ConsoleApp11.pdb

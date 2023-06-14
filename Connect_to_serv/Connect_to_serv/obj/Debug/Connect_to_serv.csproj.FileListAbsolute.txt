@@ -1,0 +1,8 @@
+C:\Users\malch\source\repos\Connect_to_serv\Connect_to_serv\bin\Debug\Connect_to_serv.exe.config
+C:\Users\malch\source\repos\Connect_to_serv\Connect_to_serv\bin\Debug\Connect_to_serv.exe
+C:\Users\malch\source\repos\Connect_to_serv\Connect_to_serv\bin\Debug\Connect_to_serv.pdb
+C:\Users\malch\source\repos\Connect_to_serv\Connect_to_serv\obj\Debug\Connect_to_serv.csproj.AssemblyReference.cache
+C:\Users\malch\source\repos\Connect_to_serv\Connect_to_serv\obj\Debug\Connect_to_serv.csproj.SuggestedBindingRedirects.cache
+C:\Users\malch\source\repos\Connect_to_serv\Connect_to_serv\obj\Debug\Connect_to_serv.csproj.CoreCompileInputs.cache
+C:\Users\malch\source\repos\Connect_to_serv\Connect_to_serv\obj\Debug\Connect_to_serv.exe
+C:\Users\malch\source\repos\Connect_to_serv\Connect_to_serv\obj\Debug\Connect_to_serv.pdb
