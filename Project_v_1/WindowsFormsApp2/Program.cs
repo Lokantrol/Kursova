@@ -1,4 +1,5 @@
-﻿using ServerApp;
+﻿
+using ClientApplication;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -17,7 +18,7 @@ namespace WindowsFormsApp2
         {
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
-            Application.Run(new ServerForm());
+            Application.Run(new ClientForm());
         }
     }
 }

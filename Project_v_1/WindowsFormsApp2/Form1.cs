@@ -1,149 +1,108 @@
 ﻿using System;
-using System.Collections.Generic;
+using System.Net.Sockets;
+using System.Text;
 using System.Windows.Forms;
+using static System.Windows.Forms.VisualStyles.VisualStyleElement;
 
-namespace ServerApp
+namespace ClientApplication
 {
-    public partial class ServerForm : Form
+    public partial class ClientForm : Form
     {
-        private List<string> messageList;
+        private TcpClient client;
+        private NetworkStream stream;
+        private byte[] buffer;
 
-        public ServerForm()
+        public ClientForm()
         {
             InitializeComponent();
-            messageList = new List<string>();
-        }
-
-        private void ServerForm_Load(object sender, EventArgs e)
-        {
-            // Запустити сервер IoT
-            StartServer();
-        }
-
-        private void StartServer()
-        {
-            // Почати прийом повідомлень від IoT клієнтів
-            // Ваш код для прийому повідомлень тут
-
-            // Приклад отримання повідомлення від клієнта та відображення його у listBox1
-            string message = "Повідомлення від клієнта";
-            AddMessageToListBox(message);
-
-            // Надіслати CONNACK після отримання CONNECT
-            SendMessageToClient(ControlByte.CONNACK, "1");
-        }
-
-        private void AddMessageToListBox(string message)
-        {
-            // Додати повідомлення до списку та відобразити його у listBox1
-            messageList.Add(message);
-            listBox1.Items.Add(message);
-        }
-
-        private void SendMessageToClient(ControlByte controlByte, string data)
-        {
-            // Надіслати повідомлення до клієнта
-            // Ваш код для надсилання повідомлення тут
-
-            // Приклад надсилання повідомлення до клієнта
-            string message = GetFormattedMessage(controlByte, data);
-            AddMessageToListBox("Надіслано: " + message);
-        }
-
-        private string GetFormattedMessage(ControlByte controlByte, string data)
-        {
-            // Форматувати повідомлення з контрольним байтом і даними
-            return string.Format("{0}:{1}", ((byte)controlByte).ToString("X2"), data);
-        }
-
-        private enum ControlByte
-        {
-            CONNECT = 0x1,
-            CONNACK = 0x2,
-            DISCON = 0x3,
-            DISCONACK = 0x4,
-            PUSH = 0x5,
-            PUSHACK = 0x6,
-            PUSHNOACK = 0x7
-        }
-        private void ProcessMessage(string message)
-        {
-            // Розбити повідомлення на контрольний байт та дані
-            string[] parts = message.Split(':');
-            if (parts.Length != 2)
-            {
-                // Неправильний формат повідомлення
-                return;
-            }
-
-            byte controlByteValue;
-            if (!byte.TryParse(parts[0], System.Globalization.NumberStyles.HexNumber, null, out controlByteValue))
-            {
-                // Неправильне значення контрольного байта
-                return;
-            }
-
-            ControlByte controlByte = (ControlByte)controlByteValue;
-            string data = parts[1];
-
-            // Обробка повідомлення в залежності від контрольного байта
-            switch (controlByte)
-            {
-                case ControlByte.CONNECT:
-                    // Обробка CONNECT повідомлення
-                    // Ваш код для обробки CONNECT повідомлення тут
-                    message = GetFormattedMessage(controlByte, data);
-                    AddMessageToListBox("Підключено до сервера ");
-                    break;
-                case ControlByte.CONNACK:
-                    // Обробка CONNACK повідомлення
-                    // Ваш код для обробки CONNACK повідомлення тут
-                    message = GetFormattedMessage(controlByte, data);
-                    AddMessageToListBox("Підключився клієнт ");
-                    break;
-                case ControlByte.DISCON:
-                    // Обробка DISCON повідомлення
-                    // Ваш код для обробки DISCON повідомлення тут
-                    message = GetFormattedMessage(controlByte, data);
-                    AddMessageToListBox("Відключено від сервера ");
-                    break;
-                case ControlByte.DISCONACK:
-                    message = GetFormattedMessage(controlByte, data);
-                    AddMessageToListBox("Відключено від сервера ");
-                    break;
-                case ControlByte.PUSH:
-                    // Обробка PUSH повідомлення
-                    // Ваш код для обробки PUSH повідомлення тут
-                    break;
-                case ControlByte.PUSHACK:
-                    // Обробка PUSHACK повідомлення
-                    // Ваш код для обробки PUSHACK повідомлення тут
-                    break;
-                case ControlByte.PUSHNOACK:
-                    // Обробка PUSHNOACK повідомлення
-                    // Ваш код для обробки PUSHNOACK повідомлення тут
-                    break;
-                default:
-                    // Невідомий контрольний байт
-                    break;
-            }
         }
 
         private void button1_Click(object sender, EventArgs e)
         {
-            string text = textBox1.Text;
-            SendMessageToClient(ControlByte.CONNACK, text);
-        }
-    }
+            client = new TcpClient();
+            client.Connect("127.0.0.1", 1234);
 
-    static class Program
-    {
-        [STAThread]
-        public static void main()
+            stream = client.GetStream();
+
+            SendMessage("CONNECT,Client,security,60"); 
+
+            listBox1.Items.Add("Під'єднано до сервера");
+
+            // Очікування повідомлення CONNACK
+            buffer = new byte[1024];
+            stream.BeginRead(buffer, 0, buffer.Length, ReceiveCallback, null);
+        }
+
+        private void button2_Click(object sender, EventArgs e)
         {
-            Application.EnableVisualStyles();
-            Application.SetCompatibleTextRenderingDefault(false);
-            Application.Run(new ServerForm());
+            SendMessage("PUSH," + textBox1.Text);
+
+            listBox1.Items.Add("Повідомлення надіслано");
+        }
+
+        private void button3_Click(object sender, EventArgs e)
+        {
+            SendMessage("DISCON");
+
+            // Очікування повідомлення DISCONACK
+            buffer = new byte[1024];
+            stream.BeginRead(buffer, 0, buffer.Length, ReceiveCallback, null);
+        }
+
+        private void SendMessage(string message)
+        {
+            byte[] messageBytes = Encoding.ASCII.GetBytes(message);
+            stream.Write(messageBytes, 0, messageBytes.Length);
+        }
+
+        private void ReceiveCallback(IAsyncResult ar)
+        {
+            try
+            {
+                int bytesRead = stream.EndRead(ar);
+                if (bytesRead > 0)
+                {
+                    string response = Encoding.ASCII.GetString(buffer, 0, bytesRead);
+                    ProcessMessage(response);
+
+                    // Продовжуємо очікування повідомлень
+                    buffer = new byte[1024];
+                    stream.BeginRead(buffer, 0, buffer.Length, ReceiveCallback, null);
+                }
+            }
+            catch (Exception ex)
+            {
+                // Обробка помилок з'єднання
+                MessageBox.Show("Помилка при отриманні повідомлення: " + ex.Message);
+            }
+        }
+
+        private void ProcessMessage(string message)
+        {
+            // Обробка отриманих повідомлень
+            if (message.StartsWith("CONNACK"))
+            {
+                listBox1.Items.Add("Отримано підтвердження підключення");
+            }
+            else if (message.StartsWith("PUSH"))
+            {
+                string[] parts = message.Split(',');
+                if (parts.Length >= 2)
+                {
+                    string data = parts[1];
+                    listBox1.Items.Add("Отримано дані: " + data);
+
+                    SendMessage("PUSHACK");
+                }
+            }
+            else if (message.StartsWith("DISCONACK"))
+            {
+                listBox1.Items.Add("Відключено від сервера");
+
+                // Закриття з'єднання та потоку
+                stream.Close();
+                client.Close();
+            }
         }
     }
 }

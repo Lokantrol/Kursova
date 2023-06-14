@@ -1,71 +1,234 @@
 ﻿using System;
+using System.Net;
+using System.Net.Sockets;
+using System.Text;
+using System.Threading;
 using System.Windows.Forms;
+using static System.Windows.Forms.VisualStyles.VisualStyleElement;
 
-namespace ClientApp
+namespace ServerApplication
 {
-    public partial class ClientForm : Form
+    public partial class ServForm : Form
     {
-        public ClientForm()
+        private TcpListener tcpListener;
+        private TcpClient connectedClient;
+        private NetworkStream networkStream;
+        private Thread listenThread;
+        private bool isListening;
+
+        public ServForm()
         {
             InitializeComponent();
         }
 
-        private void buttonSend_Click(object sender, EventArgs e)
+        private void MainForm_Load(object sender, EventArgs e)
         {
-            // Отримати введені дані з textBox1
-            string data = textBox1.Text;
-
-            // Надіслати PUSH повідомлення до сервера
-            SendMessageToServer(ControlByte.PUSH, data);
+            isListening = false;
         }
 
-        private void SendMessageToServer(ControlByte controlByte, string data)
+        private void StartListening()
         {
-            // Надіслати повідомлення до сервера
-            // Ваш код для надсилання повідомлення тут
+            try
+            {
+                tcpListener = new TcpListener(IPAddress.Any, 1234);
+                tcpListener.Start();
 
-            // Приклад надсилання повідомлення до сервера
-            string message = GetFormattedMessage(controlByte, data);
-            AddMessageToListBox("Надіслано: " + message);
+                isListening = true;
+
+                UpdateStatusLabel("Listening for clients...");
+
+                while (isListening)
+                {
+                    connectedClient = tcpListener.AcceptTcpClient();
+                    networkStream = connectedClient.GetStream();
+
+                    Thread clientThread = new Thread(HandleClientConnection);
+                    clientThread.Start();
+                }
+            }
+            catch (SocketException ex)
+            {
+                MessageBox.Show($"Socket Exception: {ex.Message}", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Exception: {ex.Message}", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
         }
 
-        private void AddMessageToListBox(string message)
+        private void HandleClientConnection()
         {
-            // Додати повідомлення до listBox1
-            listBox1.Items.Add(message);
+            try
+            {
+                // Read CONNECT packet from the client
+                byte[] receiveBuffer = new byte[1024];
+                int bytesRead = networkStream.Read(receiveBuffer, 0, receiveBuffer.Length);
+                string connectPacket = Encoding.ASCII.GetString(receiveBuffer, 0, bytesRead);
+
+                // Parse the CONNECT packet
+                string[] connectFields = connectPacket.Split(',');
+                string protocolName = connectFields[0];
+                string myName = connectFields[1];
+                string secName = connectFields[2];
+                int keepAlive = int.Parse(connectFields[3]);
+
+                // Display client connected message in the list box
+                UpdateListBox($"Client connected: {myName}");
+
+                // Send CONNACK packet to the client
+                string connAckPacket = "CONNACK,1";
+                byte[] connAckBytes = Encoding.ASCII.GetBytes(connAckPacket);
+                networkStream.Write(connAckBytes, 0, connAckBytes.Length);
+
+                // Loop to receive and process PUSH packets from the client
+                while (isListening)
+                {
+                    bytesRead = networkStream.Read(receiveBuffer, 0, receiveBuffer.Length);
+                    string pushPacket = Encoding.ASCII.GetString(receiveBuffer, 0, bytesRead);
+
+                    // Parse the PUSH packet
+                    string[] pushFields = pushPacket.Split(',');
+                    string pushData = pushFields[1];
+
+                    // Display received data in the list box
+                    UpdateListBox($"Received data: {pushData}");
+
+                    // Send PUSHACK packet to the client
+                    string pushAckPacket = "PUSHACK,1";
+                    byte[] pushAckBytes = Encoding.ASCII.GetBytes(pushAckPacket);
+                    networkStream.Write(pushAckBytes, 0, pushAckBytes.Length);
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Exception: {ex.Message}", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+            finally
+            {
+                // Clean up the client connection
+                networkStream.Close();
+                connectedClient.Close();
+            }
         }
 
-        private string GetFormattedMessage(ControlByte controlByte, string data)
+        private void StopListening()
         {
-            // Форматувати повідомлення з контрольним байтом і даними
-            return string.Format("{0}:{1}", ((byte)controlByte).ToString("X2"), data);
+            isListening = false;
+
+            if (tcpListener != null)
+                tcpListener.Stop();
+
+            if (connectedClient != null)
+            {
+                networkStream.Close();
+                connectedClient.Close();
+            }
+
+            UpdateStatusLabel("Not listening");
         }
 
-        private enum ControlByte
+        private void UpdateStatusLabel(string status)
         {
-            CONNECT = 0x1,
-            CONNACK = 0x2,
-            DISCON = 0x3,
-            DISCONACK = 0x4,
-            PUSH = 0x5,
-            PUSHACK = 0x6,
-            PUSHNOACK = 0x7
+            if (InvokeRequired)
+            {
+                Invoke(new Action<string>(UpdateStatusLabel), status);
+            }
+            else
+            {
+                statusLabel.Text = status;
+            }
+        }
+
+        private void UpdateListBox(string message)
+        {
+            if (InvokeRequired)
+            {
+                Invoke(new Action<string>(UpdateListBox), message);
+            }
+            else
+            {
+                listBox1.Items.Add(message);
+            }
+        }
+
+        private void button2_Click(object sender, EventArgs e)
+        {
+            if (connectedClient != null && connectedClient.Connected)
+            {
+                string message = textBox1.Text;
+
+                // Створити PUSH пакет з даними повідомлення
+                string pushPacket = $"PUSH,{message}";
+
+                try
+                {
+                    // Відправити PUSH пакет клієнту
+                    byte[] pushBytes = Encoding.ASCII.GetBytes(pushPacket);
+                    networkStream.Write(pushBytes, 0, pushBytes.Length);
+
+                    // Вивести повідомлення в listBox1
+                    UpdateListBox($"Message sent: {message}");
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show($"Exception: {ex.Message}", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                }
+            }
+            else
+            {
+                MessageBox.Show("No connected client.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
         }
 
         private void button1_Click(object sender, EventArgs e)
         {
+            if (!isListening)
+            {
+                listenThread = new Thread(StartListening);
+                listenThread.Start();
+
+                UpdateStatusLabel("Listening...");
+            }
+        }
+
+        private void button3_Click(object sender, EventArgs e)
+        {
+            StopListening();
+            UpdateStatusLabel("Listening STOP");
+        }
+
+        private void MainForm_Load_1(object sender, EventArgs e)
+        {
 
         }
-    }
 
-    static class Program
-    {
-        [STAThread]
-        public static void main()
+        private void button2_Click_1(object sender, EventArgs e)
         {
-            Application.EnableVisualStyles();
-            Application.SetCompatibleTextRenderingDefault(false);
-            Application.Run(new ClientForm());
+            if (connectedClient != null && connectedClient.Connected)
+            {
+                string message = textBox1.Text;
+
+                // Створити PUSH пакет з даними повідомлення
+                string pushPacket = $"PUSH,{message}";
+
+                try
+                {
+                    // Відправити PUSH пакет клієнту
+                    byte[] pushBytes = Encoding.ASCII.GetBytes(pushPacket);
+                    networkStream.Write(pushBytes, 0, pushBytes.Length);
+
+                    // Вивести повідомлення в listBox1
+                    UpdateListBox($"Message sent: {message}");
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show($"Exception: {ex.Message}", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                }
+            }
+            else
+            {
+                MessageBox.Show("No connected client.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
         }
     }
 }
