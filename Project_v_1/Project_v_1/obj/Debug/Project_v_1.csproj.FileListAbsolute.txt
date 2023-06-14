@@ -1,0 +1,11 @@
+C:\Users\malch\Desktop\Курсач\Project_v_1\Project_v_1\obj\Debug\Project_v_1.csproj.AssemblyReference.cache
+C:\Users\malch\Desktop\Курсач\Project_v_1\Project_v_1\obj\Debug\Project_v_1.csproj.SuggestedBindingRedirects.cache
+C:\Users\malch\Desktop\Курсач\Project_v_1\Project_v_1\obj\Debug\ClientApp.ClientForm.resources
+C:\Users\malch\Desktop\Курсач\Project_v_1\Project_v_1\obj\Debug\Project_v_1.Properties.Resources.resources
+C:\Users\malch\Desktop\Курсач\Project_v_1\Project_v_1\obj\Debug\Project_v_1.csproj.GenerateResource.cache
+C:\Users\malch\Desktop\Курсач\Project_v_1\Project_v_1\obj\Debug\Project_v_1.csproj.CoreCompileInputs.cache
+C:\Users\malch\Desktop\Курсач\Project_v_1\Project_v_1\bin\Debug\Project_v_1.exe.config
+C:\Users\malch\Desktop\Курсач\Project_v_1\Project_v_1\bin\Debug\Project_v_1.exe
+C:\Users\malch\Desktop\Курсач\Project_v_1\Project_v_1\bin\Debug\Project_v_1.pdb
+C:\Users\malch\Desktop\Курсач\Project_v_1\Project_v_1\obj\Debug\Project_v_1.exe
+C:\Users\malch\Desktop\Курсач\Project_v_1\Project_v_1\obj\Debug\Project_v_1.pdb

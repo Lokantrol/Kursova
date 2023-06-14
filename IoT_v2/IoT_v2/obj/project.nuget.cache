@@ -1,0 +1,10 @@
+{
+  "version": 2,
+  "dgSpecHash": "G6Uu2wPeWmWrz8UnAlDNXqKK+WvBHk99wEjA0IQ6e1nwiDo6ZYcr6KJKXcHQFCJ4Keq0oSO7c7IzdKo+RnnVfA==",
+  "success": true,
+  "projectFilePath": "C:\\Users\\malch\\Desktop\\Курсач\\IoT_v2\\IoT_v2\\IoT_v2.csproj",
+  "expectedPackageFiles": [
+    "C:\\Users\\malch\\.nuget\\packages\\mqttnet\\4.2.1.781\\mqttnet.4.2.1.781.nupkg.sha512"
+  ],
+  "logs": []
+}

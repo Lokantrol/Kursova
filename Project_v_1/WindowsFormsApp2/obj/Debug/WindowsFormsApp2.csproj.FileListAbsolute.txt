@@ -1,0 +1,7 @@
+C:\Users\malch\Desktop\Курсач\Project_v_1\WindowsFormsApp2\obj\Debug\WindowsFormsApp2.csproj.AssemblyReference.cache
+C:\Users\malch\Desktop\Курсач\Project_v_1\WindowsFormsApp2\obj\Debug\WindowsFormsApp2.csproj.SuggestedBindingRedirects.cache
+C:\Users\malch\Desktop\Курсач\Project_v_1\WindowsFormsApp2\obj\Debug\ClientApp.ClientForm.resources
+C:\Users\malch\Desktop\Курсач\Project_v_1\WindowsFormsApp2\obj\Debug\WindowsFormsApp2.Properties.Resources.resources
+C:\Users\malch\Desktop\Курсач\Project_v_1\WindowsFormsApp2\obj\Debug\WindowsFormsApp2.csproj.GenerateResource.cache
+C:\Users\malch\Desktop\Курсач\Project_v_1\WindowsFormsApp2\obj\Debug\WindowsFormsApp2.csproj.CoreCompileInputs.cache
+C:\Users\malch\Desktop\Курсач\Project_v_1\WindowsFormsApp2\obj\Debug\ServerApp.ServerForm.resources
